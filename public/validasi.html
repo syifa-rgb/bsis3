@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validasi Awardee</title>
+  <style>
+    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column; background-color: #f0f2f5; color: #333; }
+    .container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center; }
+    h2 { margin-bottom: 20px; color: #0056b3; }
+    input { padding: 12px; margin: 10px 0; width: 250px; border: 1px solid #ddd; border-radius: 5px; }
+    button { padding: 12px 25px; margin-top: 10px; border: none; border-radius: 5px; background-color: #007bff; color: white; font-size: 16px; cursor: pointer; transition: background-color 0.3s ease; }
+    button:hover { background-color: #0056b3; }
+    #message { margin-top: 15px; font-weight: bold; color: #dc3545; }
+    #continueSection { margin-top: 20px; }
+    #continueBtn { background-color: #28a745; }
+    #continueBtn:hover { background-color: #218838; }
+    #infoSection { margin-top: 20px; text-align: left; }
+    #infoSection p { margin: 5px 0; }
+    #infoSection p span { font-weight: normal; }
+    .form-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+    .btn-kembali { padding: 10px 20px; margin-top: 15px; border: none; border-radius: 5px; background-color: #dc3545; color: white; cursor: pointer; }
+    .btn-kembali:hover { background-color: #c82333; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="validationTitle"></h2>
+        <p style="color: black;">
+  Nomor induk dapat dilihat melalui link berikut
+  <a href="https://s.id/rekap-bsisi4">https://s.id/rekap-bsisi4</a>
+  diawali huruf " i " kapital bukan angka 1 <br>
+  Gunakan fitur copy-paste untuk menghindari kesalahan pengisian! <br>
+  <span style="color: red; font-style: italic;">Kesalahan akan menyebabkan datamu tidak masuk ke sistem.</span>
+</p>
+    <input type="text" id="noInduk" placeholder="Contoh P23xxxxxxx" autocomplete="off">
+    <button onclick="validateNomor()">Cek Nomor Induk</button>
+    <p id="message"></p>
+    <div id="infoSection" style="display: none; text-align: center;">
+    <p>Nama Lengkap: <span id="displayNamaLengkap"></span></p>
+    <p>Nomor Induk: <span id="displayNoInduk"></span></p>
+    <p>Asal Kampus: <span id="displayKampus"></span></p>
+    <p>Jurusan: <span id="displayJurusan"></span></p>
+    <p>Kelompok: <span id="displayKelompok"></span></p>
+    <p>Kelompok: <span id="displayNamaFasilitator"></span></p>
+</div>
+    <div id="continueSection" style="display: none;">
+        <p style="color: black; font-weight: bold; font-style: italic;">Jika bukan identitasmu. Harap masukan nomor induk dan cek nomor induk kembali.</p>
+      <button id="continueBtn">Ya itu saya! Lanjutkan ke form</button>
+    </div>
+    <button class="btn-kembali" onclick="window.location.href='index.html'">Kembali ke halaman sebelumnya</button>
+  </div>
+
+  <script>
+    const googleForms = {
+        kehadiran: {
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSf3ee6vDR_Eg9K5Vj-WY2qSlLdRCocaUC5Y4lVtAshgrt9ijA/viewform?usp=pp_url",
+            title: "Masukan Nomor Induk Kamu untuk Kehadiran Pembinaan",
+            ids: {
+                noInduk: "514250665",
+                namaLengkap: "1661662662",
+                kelompok: "1347320965",
+                namaFasilitator: "1207886755"
+            }
+        },
+        "pretestPosttest": {
+            url: "https://docs.google.com/forms/d/e/1FAIpQLScj-YIbripnJ6imBjnFoivnRDbdvgbR-2ZC3n52JYFG4ypGeQ/viewform?usp=pp_url",
+            title: "Masukan Nomor Induk Kamu untuk Pre-test & Post-test",
+            ids: {
+                noInduk: "514250665",
+                namaLengkap: "1836731478",
+                kelompok: "1106364632",
+                namaFasilitator: "1534268316"
+            }
+        },
+        tugasPengganti: {
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSeb_F5Yl7tijQTZY2O_dLE3ZGmuMFZzhwzrMgya5UZM8vL1fQ/viewform?usp=header",
+            title: "Masukan Nomor Induk Kamu untuk Tugas Pengganti",
+            ids: {
+                noInduk: "514250665",
+                namaLengkap: "1661662662",
+                kelompok: "621730003",
+                namaFasilitator: "1862907841"
+            }
+        },
+        pengaduan: {
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSdUiQzqeB6cniqwdugJWoiS5um6jMYyIV1H8N7kcF5VCZGrag/viewform?usp=header",
+            title: "Masukan Nomor Induk Kamu untuk Pengaduan",
+            ids: {
+                noInduk: "514250665",
+                namaLengkap: "1661662662",
+                kelompok: "1458854125",
+                namaFasilitator: "1953280663"
+            }
+        },
+        "assignmentOfTheMonth": {
+            url: "https://docs.google.com/forms/d/e/1FAIpQLSdwWOogPhT7YMtk4uopLMwWdLd_nXbFI3XqGDzLqwiFxuTuVw/viewform?usp=header",
+            title: "Masukan Nomor Induk Kamu untuk Assignment of The Month",
+            ids: {
+                noInduk: "514250665",
+                namaLengkap: "1661662662",
+                kelompok: "1347320965",
+                namaFasilitator: "1207886755"
+            }
+        }
+    };
+
+    let selectedForm = null;
+
+    // Ambil parameter dari URL saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const formType = urlParams.get('form');
+        selectedForm = googleForms[formType];
+        
+        if (selectedForm) {
+            document.getElementById('validationTitle').textContent = selectedForm.title;
+        } else {
+            // Jika tidak ada form yang dipilih, kembali ke halaman menu
+            window.location.href = 'index.html';
+        }
+    });
+
+    async function validateNomor() {
+      const noInduk = document.getElementById('noInduk').value;
+      const messageElement = document.getElementById('message');
+      const infoSection = document.getElementById('infoSection');
+      const continueSection = document.getElementById('continueSection');
+      const continueBtn = document.getElementById('continueBtn');
+
+      messageElement.textContent = '';
+      infoSection.style.display = 'none';
+      continueSection.style.display = 'none';
+      
+      try {
+        const response = await fetch('http://localhost:3000/validate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ noInduk })
+        });
+
+        const data = await response.json();
+
+        if (data.isValid) {
+          messageElement.textContent = data.message;
+          messageElement.style.color = '#28a745';
+          infoSection.style.display = 'block';
+          continueSection.style.display = 'block';
+
+          // Menampilkan data awardee
+          document.getElementById('displayNamaLengkap').textContent = data.data.namaLengkap;
+          document.getElementById('displayNoInduk').textContent = data.data.noInduk;
+          document.getElementById('displayKampus').textContent = data.data.universitas;
+          document.getElementById('displayJurusan').textContent = data.data.jurusan;
+          document.getElementById('displayKelompok').textContent = data.data.kelompok;
+          document.getElementById('displayNamaFasilitator').textContent = data.data.namaFasilitator;
+          
+          continueBtn.onclick = () => {
+            window.location.href = `${selectedForm.url}` + 
+  `&entry.${selectedForm.ids.noInduk}=${data.data.noInduk}` +
+  `&entry.${selectedForm.ids.namaLengkap}=${data.data.namaLengkap}` +
+  `&entry.${selectedForm.ids.kelompok}=${data.data.kelompok}`+
+  `&entry.${selectedForm.ids.namaFasilitator}=${data.data.namaFasilitator}`;
+          };
+        } else {
+          messageElement.textContent = data.message;
+          messageElement.style.color = '#dc3545';
+        }
+      } catch (error) {
+        messageElement.textContent = 'Terjadi kesalahan. Coba lagi nanti.';
+        messageElement.style.color = '#dc3545';
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
